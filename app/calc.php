@@ -1,34 +1,31 @@
 <?php
 // KONTROLER strony kalkulatora kredytowego
-require_once dirname(__FILE__).'/../config.php';
+require_once dirname(__FILE__) . '/../config.php';
 
 //ochrona kontrolera - poniższy skrypt przerwie przetwarzanie w tym punkcie gdy użytkownik jest niezalogowany
-include _ROOT_PATH.'/app/security/check.php';
+//include _ROOT_PATH.'/app/security/check.php';
 
 // pobranie parametrów
-function getParams(&$amo,&$yr,&$pct) {
-    $amo = isset($_REQUEST ['amo']) ? $_REQUEST ['amo'] : null;
-    $yr = isset($_REQUEST ['yr']) ? $_REQUEST ['yr'] : null;
-    $pct = isset($_REQUEST ['pct']) ? $_REQUEST ['pct'] : null;
+function getParams(&$form) {
+    $form['amo'] = isset($_REQUEST ['amo']) ? $_REQUEST ['amo'] : null;
+    $form['yr'] = isset($_REQUEST ['yr']) ? $_REQUEST ['yr'] : null;
+    $form['pct'] = isset($_REQUEST ['pct']) ? $_REQUEST ['pct'] : null;
 }
 
 // walidacja parametrów z przygotowaniem zmiennych dla widoku
-function validate(&$amo,&$yr,&$pct,&$messages){
-    // sprawdzenie, czy parametry zostały przekazane
-    if ( ! (isset($amo) && isset($yr) && isset($pct))) {
-        //sytuacja wystąpi kiedy np. kontroler zostanie wywołany bezpośrednio - nie z formularza
-        //$messages [] = 'Błędne wywołanie aplikacji. Brak jednego z parametrów.';
-        // teraz zakładamy, ze nie jest to błąd. Po prostu nie wykonamy obliczeń:
+function validate(&$form,&$messages,&$infos){
+    //sprawdzenie, czy parametry zostały przekazane - jeśli nie to zakończ walidację
+    if ( ! (isset($form['amo']) && isset($form['yr']) && isset($form['pct']))) {
         return false;
     }
     // sprawdzenie, czy potrzebne wartości zostały przekazane
-    if ( $amo == "") {
+    if ( $form['amo'] == "") {
         $messages [] = 'Nie podano kwoty kredytu';
     }
-    if ( $yr == "") {
+    if ( $form['yr'] == "") {
         $messages [] = 'Nie podano lat spłaty kredytu';
     }
-    if ( $pct == "") {
+    if ( $form['pct'] == "") {
         $messages [] = 'Nie podano oprocentowania kredytu';
     }
 
@@ -36,21 +33,21 @@ function validate(&$amo,&$yr,&$pct,&$messages){
     if (count ( $messages ) != 0) return false;
 
     // sprawdzenie, czy $amo, $yr, $pct są liczbami i czy są dodatnie
-    if (! is_numeric( $amo )) {
+    if (! is_numeric( $form['amo'] )) {
         $messages [] = 'Podana kwota jest niepoprawna';
-    } else  if ( doubleval($amo) < 0) {
+    } else  if ( doubleval($form['amo']) < 0) {
         $messages [] = 'Kwota kredytu nie może być ujemna';
     }
 
-    if (! is_numeric( $yr )) {
+    if (! is_numeric( $form['yr'] )) {
         $messages [] = 'Podana liczba lat spłaty kredytu jest niepoprawna';
-    } else if (intval($yr) <= 0) {
+    } else if (intval($form['yr']) <= 0) {
         $messages [] = 'Liczba lat spłaty kredytu musi być dodatnia';
     }
 
-    if (! is_numeric( $pct )) {
+    if (! is_numeric( $form['pct'] )) {
         $messages [] = 'Podane oprocentowanie jest niepoprawne';
-    } else if( doubleval($pct) < 0) {
+    } else if( doubleval($form['pct']) < 0) {
         $messages [] = 'Oprocentowanie musi być liczbą nieujemną';
     }
 
@@ -59,37 +56,38 @@ function validate(&$amo,&$yr,&$pct,&$messages){
 }
 
 // wykonaj zadanie jeśli wszystko w porządku
-function process(&$amo,&$yr,&$pct,&$messages,&$result){
+function process(&$form,&$infos,&$messages,&$result){
     global $role;
 
-    //konwersja parametrów na odpowiedni format
-    $amo = doubleval($amo);
-    $yr = intval($yr);
-    $pct = doubleval($pct);
+    $infos [] = 'Parametry poprawne. Wykonuję obliczenia.';
 
-    if ($pct == 0 && $role != 'admin'){
+    //konwersja parametrów na odpowiedni format
+    $form['amo'] = doubleval($form['amo']);
+    $form['yr'] = intval($form['yr']);
+    $form['pct'] = doubleval($form['pct']);
+
+    if ($form['pct'] == 0 && $role != 'admin'){
         $messages [] = 'Tylko administrator może dostać zerowe oprocentowanie!';
     }
 
     //wykonanie operacji
-    $result = ($amo / ($yr * 12)) * (1 + $pct/100) ;
+    $result = ($form['amo'] / ($form['yr'] * 12)) * (1 + $form['pct']/100) ;
 
 }
 
 //definicja zmiennych kontrolera
-$x = null;
-$y = null;
-$operation = null;
+$form = null;
+$infos = array();
 $result = null;
 $messages = array();
 
 //pobierz parametry i wykonaj zadanie jeśli wszystko w porządku
-getParams($amo,$yr,$pct);
-if ( validate($amo,$yr,$pct,$messages) ) { // gdy brak błędów
-    process($amo,$yr,$pct,$messages,$result);
+getParams($form);
+if ( validate($form,$messages,$infos) ) { // gdy brak błędów
+    process($form,$infos,$messages,$result);
 }
 
 // 4. Wywołanie widoku z przekazaniem zmiennych
-// - zainicjowane zmienne ($messages,$amo,$yr,$pct,$result)
+// - zainicjowane zmienne ($messages,$form,$infos,$result)
 //   będą dostępne w dołączonym skrypcie
 include 'calc_view.php';

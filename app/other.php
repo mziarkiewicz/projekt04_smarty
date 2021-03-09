@@ -1,7 +1,7 @@
 <?php
 require_once dirname(__FILE__).'/../config.php';
 //ochrona widoku
-include _ROOT_PATH.'/app/security/check.php';
+//include _ROOT_PATH.'/app/security/check.php';
 ?>
 
 <!DOCTYPE HTML>
@@ -11,6 +11,7 @@ include _ROOT_PATH.'/app/security/check.php';
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
 		<link rel="stylesheet" href="../assets/css/main.css" />
+        <link rel="stylesheet" href="<?php print(_APP_ROOT); ?>/assets/css/other.css" />
 		<noscript><link rel="stylesheet" href="../assets/css/noscript.css" /></noscript>
 	</head>
 	<body class="is-preload">
@@ -23,7 +24,6 @@ include _ROOT_PATH.'/app/security/check.php';
 					<ul>
 						<li><a href="../app/calc.php">Home</a></li>
 						<li><a href="../app/other.php">Inna chroniona strona</a></li>
-                        <li><a href="../app/security/logout.php">Wyloguj</a></li>
 					</ul>
 				</nav>
 			</header>

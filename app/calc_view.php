@@ -6,6 +6,7 @@
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
 		<link rel="stylesheet" href="<?php print(_APP_ROOT); ?>/assets/css/main.css" />
+        <link rel="stylesheet" href="<?php print(_APP_ROOT); ?>/assets/css/other.css" />
 		<noscript><link rel="stylesheet" href="<?php print(_APP_ROOT); ?>/assets/css/noscript.css" /></noscript>
 	</head>
 	<body class="is-preload">
@@ -18,8 +19,6 @@
 						<ul>
 							<li><a href="<?php print(_APP_ROOT); ?>/app/calc.php">Home</a></li>
 							<li><a href="<?php print(_APP_ROOT); ?>/app/other.php">Inna chroniona strona</a></li>
-                            <li><a href="<?php print(_APP_ROOT); ?>/app/security/logout.php">Wyloguj</a></li>
-
 						</ul>
 					</nav>
 				</header>
@@ -38,14 +37,14 @@
 								<form method="post" action=""<?php print(_APP_URL);?>/app/calc.php">
 									<div class="row gtr-uniform gtr-50">
 										<div class="col-12">
-											<input type="text" name="amo" id="id_amo" value="<?php out($amo); ?>" placeholder="Kwota kredytu" />
-										</div>
-										<div class="col-12">
-											<input type="text" name="yr" id="id_yr" value="<?php out($yr ); ?>" placeholder="Liczba lat" />
-										</div>
-										<div class="col-12">
-											<input type="text" name="pct" id="id_pct" value="<?php out($pct); ?>" placeholder="Oprocentowanie" />
-										</div>
+                                            <input type="text" name="amo" id="id_amo" value="<?php out($form['amo']); ?>" placeholder="Kwota kredytu" />
+                                        </div>
+                                        <div class="col-12">
+                                            <input type="text" name="yr" id="id_yr" value="<?php out($form['yr'] ); ?>" placeholder="Liczba lat" />
+                                        </div>
+                                        <div class="col-12">
+                                            <input type="text" name="pct" id="id_pct" value="<?php out($form['pct']); ?>" placeholder="Oprocentowanie" />
+                                        </div>
 
 										<div class="col-12">
 												<input type="submit" value="Oblicz" class=" button primary fit" />
@@ -57,7 +56,7 @@
                         //wyświeltenie listy błędów, jeśli istnieją
                         if (isset($messages)) {
                             if (count ( $messages ) > 0) {
-                                echo '<ol style="background: #fff200; margin: 1em; margin-top: 2em; margin-right: 0em; margin-bottom: 2em; margin-left: 0em; padding: .4em 2em; border-radius: 5px; color: #000000;">';
+                                echo '<ol class="messages">';
                                 foreach ( $messages as $key => $msg ) {
                                     echo '<li>'.$msg.'</li>';
                                 }
@@ -66,8 +65,21 @@
                         }
                         ?>
 
+                        <?php
+                        //wyświeltenie listy informacji, jeśli istnieją
+                        if (isset($infos)) {
+                            if (count ( $infos ) > 0) {
+                                echo '<ol class="infos">';
+                                foreach ( $infos as $key => $msg ) {
+                                    echo '<li>'.$msg.'</li>';
+                                }
+                                echo '</ol>';
+                            }
+                        }
+                        ?>
+
                         <?php if (isset($result)){ ?>
-                            <div style="background: #1fadfa; margin: 1em; margin-top: 2em; margin-right: 0em; margin-bottom: 3em; margin-left: 0em; padding: .3em 1em; border-radius: 5px; color: #fff;">
+                            <div class="result">
                                 <?php echo 'Miesięczna rata będzie wynosić ok. : '.number_format($result, 2,'.',''); ?>
                             </div>
                         <?php } ?>
