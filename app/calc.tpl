@@ -72,4 +72,7 @@
 		</div>
 	{/if}
 
+		</div>
+	</div>
+
 {/block}
