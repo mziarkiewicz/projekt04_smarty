@@ -2,6 +2,7 @@
 // KONTROLER strony kalkulatora kredytowego
 require_once dirname(__FILE__) . '/../config.php';
 
+require_once _ROOT_PATH.'/libs/smarty/Smarty.class.php';
 //ochrona kontrolera - poniższy skrypt przerwie przetwarzanie w tym punkcie gdy użytkownik jest niezalogowany
 //include _ROOT_PATH.'/app/security/check.php';
 
@@ -87,7 +88,22 @@ if ( validate($form,$messages,$infos) ) { // gdy brak błędów
     process($form,$infos,$messages,$result);
 }
 
-// 4. Wywołanie widoku z przekazaniem zmiennych
-// - zainicjowane zmienne ($messages,$form,$infos,$result)
-//   będą dostępne w dołączonym skrypcie
-include 'calc_view.php';
+//// 4. Wywołanie widoku z przekazaniem zmiennych
+//// - zainicjowane zmienne ($messages,$form,$infos,$result)
+////   będą dostępne w dołączonym skrypcie
+//include 'calc.tpl';
+
+$smarty = new Smarty();
+
+$smarty->assign('app_url',_APP_URL);
+$smarty->assign('root_path',_ROOT_PATH);
+$smarty->assign('page_title','Projekt 04 - Smarty');
+$smarty->assign('page_description','Przykład szablonowania oparty o bibliotekę Smarty');
+$smarty->assign('page_header','Szablony Smarty');
+
+$smarty->assign('form',$form);
+$smarty->assign('result',$result);
+$smarty->assign('messages',$messages);
+$smarty->assign('infos',$infos);
+
+$smarty->display(_ROOT_PATH.'/app/calc.tpl');
